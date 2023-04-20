@@ -1,0 +1,5 @@
+GET /login
+GET /getfavorites/:username
+POST /register
+PUT /addToFavorites/:acronym
+
