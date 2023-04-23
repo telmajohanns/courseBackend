@@ -8,12 +8,13 @@ app.use(express.urlencoded({ extended: false }));
 
 // Get favorites
 app.get('/favorites/:username', async (req, res) => {
-  const { username } = req.params;
+  const username = req.params.username;
   try {
     const getFavorites = await pool.query(
-      `SELECT acronym FROM favorites WHERE user_name = $1`,
+      `SELECT * FROM favorites WHERE user_name = $1`,
       [username]
     );
+    console.log(username);
     res.json(getFavorites.rows);
   } catch (err) {
     console.error(err);
@@ -38,13 +39,22 @@ app.post('/favorites/:username&:acronym', async (req, res) => {
 });
 
 // Login
-app.post('/login/:username', async (req, res) => {
-  const { username } = req.params;
+app.post('/login/:username&:password', async (req, res) => {
+  const username = req.params.username;
+  const password = req.params.password;
+
   try {
     const loginUser = await pool.query(
-      `SELECT * FROM users WHERE username = $1`,
-      [username]
+      `SELECT * FROM users WHERE username = $1 AND password = $2`,
+      [username, password]
     );
+    if (loginUser.rows.length < 1) {
+      res.status(401).json({ message: 'Invalid credentials' });
+      return;
+    } else {
+      res.status(200).json({ message: 'Valid' });
+      return;
+    }
     res.json(loginUser.rows);
   } catch (err) {
     console.error(err);
