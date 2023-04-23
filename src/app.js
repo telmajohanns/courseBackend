@@ -38,6 +38,20 @@ app.post('/favorites/:username&:acronym', async (req, res) => {
   }
 });
 
+app.get('/:username', async (req, res) => {
+  const username = req.params.username;
+  try {
+    const getUser = await pool.query(
+      `SELECT * FROM users WHERE username = $1`,
+      [username]
+    );
+    res.json(getUser.rows);
+  } catch (err) {
+    console.error(err);
+    res.json(err);
+  }
+});
+
 // Login
 app.post('/login/:username&:password', async (req, res) => {
   const username = req.params.username;
